@@ -93,25 +93,7 @@ public class GaleShapleyAdmission{
 	private void firstIteration(){
 		for(int i=0;i<program_tokens.length;i++){
 			MeritList merit_list = allRankLists.get(program_tokens[i]);
-			int highest_rank = merit_list.getHighestRank();
-			for(int j=0;j<=highest_rank;j++){
-				if(merit_list.rank_list.containsKey(j)){
-					ArrayList<String> candidate_ids = merit_list.rank_list.get(j);
-					for(int k=0;k<candidate_ids.size();k++){
-						String candidate_id = candidate_ids.get(i);
-						Candidate candidate = allCandidates.get(candidate_id);
-						ArrayList<String> preferences = candidate.virtual_pl;
-						for(int n=0;n<preferences.size();n++){
-							VirtualProgramme virtual_programme = allVirtualPrograms.get(preferences.get(n));
-							if(virtual_programme.wait_list.size()<virtual_programme.quota){
-								virtual_programme.addCadidateToWaitList(candidate);
-								candidate.setAllotedVP(n);
-								break;
-							}
-						}
-					}
-				}
-			}
+			int highest_rank = merit_list.highest_rank;
 		}
 	}
 }

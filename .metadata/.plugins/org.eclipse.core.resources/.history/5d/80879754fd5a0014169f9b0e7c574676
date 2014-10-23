@@ -24,8 +24,4 @@ public class MeritList{
 		}
 		this.rank_list.put(tempRank, tempArrList);
 	}
-	
-	int getHighestRank(){
-		return this.highest_rank;
-	}
 }
