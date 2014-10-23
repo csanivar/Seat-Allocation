@@ -11,7 +11,7 @@ public class VirtualProgramme{
 	ArrayList<Candidate> ds_wait_list;
 	ArrayList<Candidate> ds_applied_list;
 
-	public VirtualProgramme(){
+	public void VirtualProgramme(){
 		this.quota = 0;
 		this.category = "";
 		this.pd_status = "";

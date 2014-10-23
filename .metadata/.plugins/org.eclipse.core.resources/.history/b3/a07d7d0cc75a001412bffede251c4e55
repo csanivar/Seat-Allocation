@@ -13,7 +13,7 @@ public class Candidate{
 	int next_vp;
 	int alloted_vp;
 
-	public Candidate(){
+	public void Candidate(){
 		this.pl="";
 		this.pd_status = false;
 		this.virtual_pl = new ArrayList<String>();

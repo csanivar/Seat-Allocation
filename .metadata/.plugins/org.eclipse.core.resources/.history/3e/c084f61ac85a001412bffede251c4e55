@@ -68,6 +68,7 @@ public class GaleShapleyAdmission{
 			while((line = fileReader.readLine()) != null){
 				String[] tokens = line.split(",");
 				
+				allCandidateChoices.put(tokens[0],tempCandidate);
 			}
 		}
 		catch(Exception e){

@@ -4,7 +4,7 @@ import java.util.*;
 public class Candidate{
 	String id;
 	String category;
-	Boolean pd_status;
+	String pd_status;
 	String ds_eligibility;
 	String nationality;
 	String pl;
@@ -13,9 +13,8 @@ public class Candidate{
 	int next_vp;
 	int alloted_vp;
 
-	public Candidate(){
+	public void Candidate(){
 		this.pl="";
-		this.pd_status = false;
 		this.virtual_pl = new ArrayList<String>();
 		this.current_vp = 0;
 		this.next_vp = 0;
@@ -31,8 +30,7 @@ public class Candidate{
 	}
 
 	void setPDStatus(String pd_status){
-		if(pd_status=="Y") this.pd_status = true;
-		else if(pd_status=="N") this.pd_status = false;
+		this.pd_status = pd_status;
 	}
 
 	void setDSStatus(String ds_eligibility){
@@ -142,7 +140,7 @@ public class Candidate{
 	String getNationality(){
 		return this.nationality;
 	}
-	Boolean getPDStatus(){
+	String getPDStatus(){
 		return this.pd_status;
 	}
 	String getDSStatus(){

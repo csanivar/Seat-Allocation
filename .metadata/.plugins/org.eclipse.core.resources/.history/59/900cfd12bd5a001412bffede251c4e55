@@ -11,7 +11,7 @@ public class VirtualProgramme{
 	ArrayList<Candidate> ds_wait_list;
 	ArrayList<Candidate> ds_applied_list;
 
-	public VirtualProgramme(){
+	public void VirtualProgramme(){
 		this.quota = 0;
 		this.category = "";
 		this.pd_status = "";
@@ -22,22 +22,22 @@ public class VirtualProgramme{
 		this.ds_wait_list = new ArrayList<Candidate>();
 		this.ds_applied_list = new ArrayList<Candidate>();
 	}
-	void setQuota(int quota){
+	private void setQuota(int quota){
 		this.quota = quota;
 	}
-    void setCategory(String category){
+	private void setCategory(String category){
 		this.category = category;
 	}
-	void setPDStatus(String pd_status){
+	private void setPDStatus(String pd_status){
 		this.pd_status = pd_status;
 	}
-	void addCadidateToWaitList(Candidate candidate){
+	private void addCadidateToWaitList(Candidate candidate){
 		this.wait_list.add(candidate);
 	}
-	void addCandidateToAppliedList(Candidate candidate){
+	private void addCandidateToAppliedList(Candidate candidate){
 		this.applied_list.add(candidate);
 	}
-	void addForeignCandidateToWaitList(Candidate candidate){
+	private void addForeignCandidateToWaitList(Candidate candidate){
 		this.foreign_wait_list.add(candidate);
 	}
 }

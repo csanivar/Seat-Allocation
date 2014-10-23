@@ -4,18 +4,12 @@ import java.io.FileReader;
 import java.util.HashMap;
 
 public class GaleShapleyAdmission{
-	String program_tokens[] = {"GE","OBC","SC","ST","GE-PD","OBC-PD","SC-PD","ST-PD"};
+	String program_tokens[] = {"-GE","-OBC","-SC","-ST","-GE-PD","-OBC-PD","-SC-PD","-ST-PD"};
 	HashMap<String,VirtualProgramme> allVirtualPrograms= new HashMap<String,VirtualProgramme>();
 	HashMap<String,Candidate> allCandidateChoices = new HashMap<String,Candidate>();
-	HashMap<String,MeritList> allRankLists  = new HashMap<String,MeritList>();
 	public void main(String args[]) throws FileNotFoundException{
-		for(int i=0;i<8;i++){
-			MeritList tempMeritList = new MeritList();
-			allRankLists.put(program_tokens[i],tempMeritList);
-		}
 		readPrograms();
 		readChoices();
-		readRankList();
 	}
 	
 	private void readPrograms() throws FileNotFoundException{
@@ -45,26 +39,6 @@ public class GaleShapleyAdmission{
 		try{
 			String line ="";
 			fileReader = new BufferedReader(new FileReader("choices.csv"));
-			while((line = fileReader.readLine()) != null){
-				String[] tokens = line.split(",");
-				Candidate tempCandidate = new Candidate();
-				tempCandidate.setID(tokens[0]);
-				tempCandidate.setCategory(tokens[1]);
-				tempCandidate.setPDStatus(tokens[2]);
-				tempCandidate.setPL(tokens[3]);
-				tempCandidate.makeVPL();
-				allCandidateChoices.put(tokens[0],tempCandidate);
-			}
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-	}
-	private void readRankList(){
-		BufferedReader fileReader = null;
-		try{
-			String line ="";
-			fileReader = new BufferedReader(new FileReader("ranklist.csv"));
 			while((line = fileReader.readLine()) != null){
 				String[] tokens = line.split(",");
 				
