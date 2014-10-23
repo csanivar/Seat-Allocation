@@ -72,14 +72,12 @@ public class GaleShapleyAdmission{
 					MeritList tempMeritList = allRankLists.get(program_tokens[i]);
 					if(tokens[i+3]!="0"){
 						tempMeritList.putCandidate(tokens[0], tokens[i+3]);
-						allRankLists.put(program_tokens[i], tempMeritList);
 					}
 				}
 				for(int i=4;i<8;i++){
 					MeritList tempMeritList = allRankLists.get(program_tokens[i]);
 					if(tokens[i+4]!="0"){
 						tempMeritList.putCandidate(tokens[0], tokens[i+3]);
-						allRankLists.put(program_tokens[i], tempMeritList);
 					}
 				}
 			}

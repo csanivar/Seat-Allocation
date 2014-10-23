@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GaleShapleyAdmission{
@@ -68,20 +67,7 @@ public class GaleShapleyAdmission{
 			fileReader = new BufferedReader(new FileReader("ranklist.csv"));
 			while((line = fileReader.readLine()) != null){
 				String[] tokens = line.split(",");
-				for(int i=0;i<4;i++){
-					MeritList tempMeritList = allRankLists.get(program_tokens[i]);
-					if(tokens[i+3]!="0"){
-						tempMeritList.putCandidate(tokens[0], tokens[i+3]);
-						allRankLists.put(program_tokens[i], tempMeritList);
-					}
-				}
-				for(int i=4;i<8;i++){
-					MeritList tempMeritList = allRankLists.get(program_tokens[i]);
-					if(tokens[i+4]!="0"){
-						tempMeritList.putCandidate(tokens[0], tokens[i+3]);
-						allRankLists.put(program_tokens[i], tempMeritList);
-					}
-				}
+				
 			}
 		}
 		catch(Exception e){
