@@ -133,7 +133,7 @@ public class GaleShapleyAdmission {
 						}
 					}
 					else{
-						ArrayList<Candidate> top_q_candidates = getTopQCandidates(applied_candidates,virtualProgramme.getCategory(),virtualProgramme.quota);
+						ArrayList<Candidate> top_q_candidates = getTopQCandidates(applied_candidates,virtualProgramme.getCategory());
 						for(int i=0;i<top_q_candidates.size();i++){
 							virtualProgramme.addCadidateToWaitList(top_q_candidates.get(i));
 						}
@@ -143,20 +143,10 @@ public class GaleShapleyAdmission {
 		}
 	}
 	
-	public static ArrayList<Candidate> getTopQCandidates(ArrayList<Candidate> applied_candidates,String merit_list_name,Integer q){
+	public static ArrayList<Candidate> getTopQCandidates(ArrayList<Candidate> applied_candidates,String merit_list_name){
 		ArrayList<Candidate> result = new ArrayList<Candidate>();
-		GSMeritList merit_list = allRankLists.get(merit_list_name);
 		Collections.sort(applied_candidates, new CandidateComparator(merit_list_name));
-		for(int i=0;i<q;i++){
-			result.add(applied_candidates.get(i));
-		}
-		int last_rank = merit_list.getRank(result.get(q-1).getID());
-		for(int i=q;i<applied_candidates.size();i++){
-			if(merit_list.getRank(applied_candidates.get(i).getID())==last_rank){
-				result.add(applied_candidates.get(i));
-			}
-			else break;
-		}
+		
 		return result;
 	}
 	public static class CandidateComparator implements Comparator<Candidate>{
