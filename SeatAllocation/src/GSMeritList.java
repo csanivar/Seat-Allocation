@@ -1,0 +1,23 @@
+import java.util.HashMap;
+
+
+public class GSMeritList {
+	private HashMap<String,Integer> merit_list;
+	
+	public GSMeritList(){
+		merit_list = new HashMap<String,Integer>();
+	}
+	
+	public void putCandidate(String id,String rank){
+		int tempRank = Integer.valueOf(rank);
+		this.merit_list.put(id, tempRank);
+	}
+	
+	public Boolean isRankGreater(String id1,String id2){
+		if(this.merit_list.get(id1) > this.merit_list.get(id2)) return true;
+		return false;
+	}
+	public int getRank(String id){
+		return this.merit_list.get(id);
+	}
+}

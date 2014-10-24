@@ -1,0 +1,10 @@
+import java.util.HashMap;
+
+
+public class GSMeritList {
+	private HashMap<String,Integer> merit_list;
+	
+	public GSMeritList(){
+		merit_list = new HashMap<String,Integer>();
+	}
+}

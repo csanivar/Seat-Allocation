@@ -17,7 +17,7 @@ public class Candidate{
 		this.pd_status = false;
 		this.virtual_pl = new ArrayList<String>();
 		this.current_vp = 0;
-		this.next_vp = 0;
+		this.next_vp = 1;
 		this.alloted_vp = -1;
 	}
 

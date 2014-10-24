@@ -42,4 +42,13 @@ public class VirtualProgramme{
 	void addForeignCandidateToWaitList(Candidate candidate){
 		this.foreign_wait_list.add(candidate);
 	}
+	public ArrayList<Candidate> getAppliedList(){
+		return this.applied_list;
+	}
+	public ArrayList<Candidate> getWaitList(){
+		return this.wait_list;
+	}
+	public String getCategory(){
+		return this.category;
+	}
 }

@@ -1,0 +1,46 @@
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.HashMap;
+
+
+public class GaleShapleyAdmission {
+	static String program_tokens[] = {"GE","OBC","SC","ST","GE-PD","OBC-PD","SC-PD","ST-PD"};
+	static HashMap<String,VirtualProgramme> allVirtualPrograms= new HashMap<String,VirtualProgramme>();
+	static HashMap<String,Candidate> allCandidates = new HashMap<String,Candidate>();
+	static HashMap<String,MeritList> allRankLists  = new HashMap<String,MeritList>();
+	public static void main(String args[]) throws FileNotFoundException{
+		for(int i=0;i<8;i++){
+			MeritList tempMeritList = new MeritList();
+			allRankLists.put(program_tokens[i],tempMeritList);
+		}
+		readPrograms();
+		readChoices();
+		readRankList();
+		firstIteration();             // Iterate through all the rank lists and allot seats accordingly
+	}
+	
+	private static void readPrograms() throws FileNotFoundException{
+        BufferedReader fileReader = null;
+        try
+        {
+            String line = "";
+            fileReader = new BufferedReader(new FileReader("programs.csv"));
+            line = fileReader.readLine();
+            while ((line = fileReader.readLine()) != null)
+            {
+                String[] tokens = line.split(",");
+                for(int i=0;i<program_tokens.length;i++)
+                {
+                	VirtualProgramme tempVPL = new VirtualProgramme();
+                	tempVPL.setQuota(Integer.valueOf(tokens[i+3]));
+                	tempVPL.setCategory(program_tokens[i]);
+                	allVirtualPrograms.put(tokens[1]+"-"+program_tokens[i],tempVPL);
+                }
+            }
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        } 
+	}
+}
