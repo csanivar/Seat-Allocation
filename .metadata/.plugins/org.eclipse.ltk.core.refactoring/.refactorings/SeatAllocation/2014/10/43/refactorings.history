@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;GaleShapleyAdmission&apos; to &apos;MeritOrderAdmission&apos;&#x0A;- Original project: &apos;SeatAllocation&apos;&#x0A;- Original element: &apos;GaleShapleyAdmission&apos;&#x0A;- Renamed element: &apos;MeritOrderAdmission&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;GaleShapleyAdmission&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;{GaleShapleyAdmission.java[GaleShapleyAdmission" matchStrategy="1" name="MeritOrderAdmission" qualified="false" references="true" similarDeclarations="false" stamp="1414156000021" textual="false" version="1.0"/>
+</session>

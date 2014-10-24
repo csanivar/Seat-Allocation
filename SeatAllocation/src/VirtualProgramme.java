@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class VirtualProgramme{
 	int quota;
+	int highest_rank;
 	String category;
 	String pd_status;
 	ArrayList<Candidate> wait_list;
@@ -13,6 +14,7 @@ public class VirtualProgramme{
 
 	public VirtualProgramme(){
 		this.quota = 0;
+		this.highest_rank = 0;
 		this.category = "";
 		this.pd_status = "";
 		this.wait_list = new ArrayList<Candidate>();

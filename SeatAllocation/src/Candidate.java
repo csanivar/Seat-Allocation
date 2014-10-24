@@ -60,24 +60,24 @@ public class Candidate{
 
 	void makeVPL(){
 		String[] all_pls = pl.split("_");
-		if(pd_status.equals("NO")){
+		if(pd_status==false){
 			switch(category){
 				case "GE": for(int i=0;i<all_pls.length;i++){
-							virtual_pl.add(all_pls[i]);
+							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-OBC");
 							virtual_pl.add(all_pls[i]+"-PD");
 							virtual_pl.add(all_pls[i]+"-OBC-PD");
 						 }
 						 break;
 				case "OBC": for(int i=0;i<all_pls.length;i++){
-							virtual_pl.add(all_pls[i]);
+							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-OBC");
 							virtual_pl.add(all_pls[i]+"-PD");
 							virtual_pl.add(all_pls[i]+"-OBC-PD");
 						  }
 						  break;
 				case "SC": for(int i=0;i<all_pls.length;i++){
-							virtual_pl.add(all_pls[i]);
+							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-SC");
 							virtual_pl.add(all_pls[i]+"-OBC");
 							virtual_pl.add(all_pls[i]+"-PD");
@@ -86,7 +86,7 @@ public class Candidate{
 						 }
 						 break;
 				case "ST": for(int i=0;i<all_pls.length;i++){
-							virtual_pl.add(all_pls[i]);
+							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-ST");
 							virtual_pl.add(all_pls[i]+"-OBC");
 							virtual_pl.add(all_pls[i]+"-PD");
@@ -96,22 +96,22 @@ public class Candidate{
 						 break;
 			}
 		}
-		else if(pd_status.equals("YES")){
+		else if(pd_status==true){
 			switch(category){
 				case "GE": for(int i=0;i<all_pls.length;i++){
-							virtual_pl.add(all_pls[i]);
+							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-PD");	
 						 }
 						 break;
 				case "OBC": for(int i=0;i<all_pls.length;i++){
-							virtual_pl.add(all_pls[i]);
+							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-PD");
 							virtual_pl.add(all_pls[i]+"-OBC");
 							virtual_pl.add(all_pls[i]+"-OBC-PD");
 						  }
 						  break;
 				case "SC": for(int i=0;i<all_pls.length;i++){
-							virtual_pl.add(all_pls[i]);
+							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-SC");
 							virtual_pl.add(all_pls[i]+"-PD");
 							virtual_pl.add(all_pls[i]+"-SC-PD");
@@ -120,7 +120,7 @@ public class Candidate{
 						 }
 						 break;
 				case "ST": for(int i=0;i<all_pls.length;i++){
-							virtual_pl.add(all_pls[i]);
+							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-ST");
 							virtual_pl.add(all_pls[i]+"-PD");
 							virtual_pl.add(all_pls[i]+"-ST-PD");
