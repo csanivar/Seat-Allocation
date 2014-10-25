@@ -11,7 +11,7 @@ import java.util.Set;
 public class GaleShapleyAdmission {
 	static String program_tokens[] = {"GE","OBC","SC","ST","GE-PD","OBC-PD","SC-PD","ST-PD"};
 	static HashMap<String,VirtualProgramme> allVirtualPrograms= new HashMap<String,VirtualProgramme>();
-	static HashMap<String,Candidate> allCandidates = new HashMap<String,Candidate>();
+	static ArrayList<Candidate> allCandidates = new ArrayList<Candidate>();
 	static HashMap<String,GSMeritList> allRankLists  = new HashMap<String,GSMeritList>();
 	private static boolean end = false;
 	public static void main(String args[]) throws FileNotFoundException{
@@ -47,6 +47,11 @@ public class GaleShapleyAdmission {
         catch (Exception e) {
             e.printStackTrace();
         } 
+      /* Set<String> all_names = allVirtualPrograms.keySet();
+        String[] temp_names = all_names.toArray(new String[all_names.size()]);
+        for(int i=0;i<allVirtualPrograms.size();i++){
+        	System.out.println(temp_names[i]);
+        } */
 	}
 	private static void readChoices(){
 		BufferedReader fileReader = null;
@@ -67,7 +72,7 @@ public class GaleShapleyAdmission {
 					System.out.print(" ");
 				}
 				System.out.println(); */
-				allCandidates.put(tokens[0],tempCandidate);
+				allCandidates.add(tempCandidate);
 			}
 		}
 		catch(Exception e){
@@ -84,14 +89,14 @@ public class GaleShapleyAdmission {
 				String[] tokens = line.split(",");
 				for(int i=0;i<4;i++){
 					GSMeritList tempMeritList = allRankLists.get(program_tokens[i]);
-					if(!tokens[i+3].equals("0")){
+					if(Integer.valueOf(tokens[i+3])>=0){
 						tempMeritList.putCandidate(tokens[0], tokens[i+3]);
 						allRankLists.put(program_tokens[i], tempMeritList);
 					}
 				}
 				for(int i=4;i<8;i++){
 					GSMeritList tempMeritList = allRankLists.get(program_tokens[i]);
-					if(!tokens[i+4].equals("0")){
+					if(Integer.valueOf(tokens[i+3])>=0){
 						tempMeritList.putCandidate(tokens[0], tokens[i+4]);
 						allRankLists.put(program_tokens[i], tempMeritList);
 					}
@@ -107,7 +112,7 @@ public class GaleShapleyAdmission {
 		while(!end){
 			for(int n=0;n<N;n++){
 				Candidate candidate = allCandidates.get(n);
-				if(candidate.getAllotedVP() != -1){
+				if(candidate.getAllotedVP() == -1 && candidate.getCurrentVP()<=candidate.virtual_pl.size() && candidate.virtual_pl.size()!=0){
 					int current_vp = candidate.getCurrentVP();
 					VirtualProgramme virtual_programme = allVirtualPrograms.get(candidate.virtual_pl.get(current_vp));
 					virtual_programme.addCandidateToAppliedList(candidate);
@@ -120,23 +125,25 @@ public class GaleShapleyAdmission {
 				}
 			}
 			Set<String> temp_vpl_names = allVirtualPrograms.keySet();
-			String[] vpl_names = (String[]) temp_vpl_names.toArray();
+			String[] vpl_names =  temp_vpl_names.toArray(new String[temp_vpl_names.size()]);
 			int K = vpl_names.length;
 			for(int k=0;k<K;k++){
 				VirtualProgramme virtualProgramme = allVirtualPrograms.get(vpl_names[k]);
 				ArrayList<Candidate> applied_candidates = virtualProgramme.getAppliedList();
 				int P = applied_candidates.size();
-				for(int p=0;p<P;p++){
-					if(applied_candidates.size()<virtualProgramme.quota){
-						for(int i=0;i<applied_candidates.size();i++){
-							virtualProgramme.addCadidateToWaitList(applied_candidates.get(i));
-						}
+				System.out.println(virtualProgramme.getCategory()+" printed here");
+				for(int i=0;i<P;i++){
+					System.out.println(applied_candidates.get(i).getID());
+				}
+				if(applied_candidates.size()<virtualProgramme.quota){
+					for(int i=0;i<applied_candidates.size();i++){
+						virtualProgramme.addCadidateToWaitList(applied_candidates.get(i));
 					}
-					else{
-						ArrayList<Candidate> top_q_candidates = getTopQCandidates(applied_candidates,virtualProgramme.getCategory(),virtualProgramme.quota);
-						for(int i=0;i<top_q_candidates.size();i++){
-							virtualProgramme.addCadidateToWaitList(top_q_candidates.get(i));
-						}
+				}
+				else{
+					ArrayList<Candidate> top_q_candidates = getTopQCandidates(applied_candidates,virtualProgramme.getCategory(),virtualProgramme.quota);
+					for(int i=0;i<top_q_candidates.size();i++){
+						virtualProgramme.addCadidateToWaitList(top_q_candidates.get(i));
 					}
 				}
 			}
@@ -168,11 +175,23 @@ public class GaleShapleyAdmission {
 		}
 	    @Override
 	    public int compare(Candidate c1, Candidate c2) {
-	        if(merit_list.getRank(c1.getID()) > merit_list.getRank(c2.getID())){
-	            return 1;
-	        } else {
-	            return -1;
-	        }
+	    	int rank1 = merit_list.getRank(c1.getID());
+	    	int rank2 = merit_list.getRank(c2.getID());
+	    	if(rank1!=0 && rank2!=0){
+	    		if(rank1 > rank2){
+		            return 1;
+		        } else {
+		            return -1;
+		        }
+	    	}
+	    	else if(rank1==0){
+	    		return -1;
+	    	}
+	    	else if(rank2==0){
+	    		return -1;
+	    	}
+	    	else return 1;
+	        
 	    }
 	}
 }
