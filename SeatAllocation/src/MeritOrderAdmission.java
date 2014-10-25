@@ -77,6 +77,23 @@ public class MeritOrderAdmission{
             line = fileReader.readLine();
 			while((line = fileReader.readLine()) != null){
 				String[] tokens = line.split(",");
+				Candidate candidate = allCandidates.get(tokens[0]);
+				String candidate_category = candidate.getCategory().toLowerCase();
+				candidate.ge_rank = Integer.valueOf(tokens[3]);
+				candidate.ge_pd_rank = Integer.valueOf(tokens[8]);
+				switch (candidate_category){
+					case "obc" : candidate.cat_rank = Integer.valueOf(tokens[4]);
+								 candidate.cat_pd_rank = Integer.valueOf(tokens[9]);
+								 break;
+					case "sc" : candidate.cat_rank = Integer.valueOf(tokens[5]);
+					 			 candidate.cat_pd_rank = Integer.valueOf(tokens[10]);
+					 			 break;
+					case "st" : candidate.cat_rank = Integer.valueOf(tokens[6]);
+					 			 candidate.cat_pd_rank = Integer.valueOf(tokens[11]);
+					 			 break;
+				}
+				candidate.makeActualVPL();
+				allCandidates.put(candidate.getID(), candidate);
 				for(int i=0;i<4;i++){
 					MeritList tempMeritList = allRankLists.get(program_tokens[i]);
 					if(!tokens[i+3].equals("0")){

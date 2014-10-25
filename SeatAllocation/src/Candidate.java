@@ -2,22 +2,31 @@ import java.util.ArrayList;
 
 public class Candidate{
 	String id;
+	int ge_rank;
+	int cat_rank;
+	int ge_pd_rank;
+	int cat_pd_rank;
 	String category;
 	Boolean pd_status;
 	String ds_eligibility;
 	String nationality;
 	String pl;
 	ArrayList<String> virtual_pl;
+	ArrayList<String> pl_after_dres;
 	int current_vp;
 	int next_vp;
 	int alloted_vp;
 
 	public Candidate(){
 		this.pl="";
+		this.ge_rank = 0;
+		this.cat_rank = 0;
+		this.ge_pd_rank = 0;
+		this.cat_pd_rank = 0;
 		this.pd_status = false;
 		this.virtual_pl = new ArrayList<String>();
 		this.current_vp = 0;
-		this.next_vp = 1;
+		this.next_vp = 0;
 		this.alloted_vp = -1;
 	}
 
@@ -60,23 +69,24 @@ public class Candidate{
 
 	void makeVPL(){
 		String[] all_pls = pl.split("_");
+		int length = all_pls.length;
 		if(pd_status==false){
 			switch(category){
-				case "GE": for(int i=0;i<all_pls.length;i++){
+				case "GE": for(int i=0;i<length;i++){
 							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-OBC");
 							virtual_pl.add(all_pls[i]+"-PD");
 							virtual_pl.add(all_pls[i]+"-OBC-PD");
 						 }
 						 break;
-				case "OBC": for(int i=0;i<all_pls.length;i++){
+				case "OBC": for(int i=0;i<length;i++){
 							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-OBC");
 							virtual_pl.add(all_pls[i]+"-PD");
 							virtual_pl.add(all_pls[i]+"-OBC-PD");
 						  }
 						  break;
-				case "SC": for(int i=0;i<all_pls.length;i++){
+				case "SC": for(int i=0;i<length;i++){
 							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-SC");
 							virtual_pl.add(all_pls[i]+"-OBC");
@@ -85,7 +95,7 @@ public class Candidate{
 							virtual_pl.add(all_pls[i]+"-SC-PD");
 						 }
 						 break;
-				case "ST": for(int i=0;i<all_pls.length;i++){
+				case "ST": for(int i=0;i<length;i++){
 							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-ST");
 							virtual_pl.add(all_pls[i]+"-OBC");
@@ -98,19 +108,19 @@ public class Candidate{
 		}
 		else if(pd_status==true){
 			switch(category){
-				case "GE": for(int i=0;i<all_pls.length;i++){
+				case "GE": for(int i=0;i<length;i++){
 							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-PD");	
 						 }
 						 break;
-				case "OBC": for(int i=0;i<all_pls.length;i++){
+				case "OBC": for(int i=0;i<length;i++){
 							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-PD");
 							virtual_pl.add(all_pls[i]+"-OBC");
 							virtual_pl.add(all_pls[i]+"-OBC-PD");
 						  }
 						  break;
-				case "SC": for(int i=0;i<all_pls.length;i++){
+				case "SC": for(int i=0;i<length;i++){
 							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-SC");
 							virtual_pl.add(all_pls[i]+"-PD");
@@ -119,7 +129,7 @@ public class Candidate{
 							virtual_pl.add(all_pls[i]+"-OBC-PD");
 						 }
 						 break;
-				case "ST": for(int i=0;i<all_pls.length;i++){
+				case "ST": for(int i=0;i<length;i++){
 							virtual_pl.add(all_pls[i]+"-GE");
 							virtual_pl.add(all_pls[i]+"-ST");
 							virtual_pl.add(all_pls[i]+"-PD");
@@ -131,7 +141,16 @@ public class Candidate{
 			}
 		}
 	}
-
+	public void makeActualVPL(){
+		String[] all_pls = pl.split("_");
+		int length = all_pls.length;
+		for(int i=0;i<length;i++){
+			if(this.ge_rank!=0) virtual_pl.add(all_pls[i]+"-"+"GE");
+			if(this.cat_rank!=0) virtual_pl.add(all_pls[i]+"-"+this.category);
+			if(this.ge_pd_rank!=0) virtual_pl.add(all_pls[i]+"-"+"GE-PD");
+			if(this.cat_pd_rank!=0) virtual_pl.add(all_pls[i]+"-"+this.category+"-PD");
+		}
+	}
 	String getID(){
 		return this.id;
 	}

@@ -11,7 +11,7 @@ import java.util.Set;
 public class GaleShapleyAdmission {
 	static String program_tokens[] = {"GE","OBC","SC","ST","GE-PD","OBC-PD","SC-PD","ST-PD"};
 	static HashMap<String,VirtualProgramme> allVirtualPrograms= new HashMap<String,VirtualProgramme>();
-	static ArrayList<Candidate> allCandidates = new ArrayList<Candidate>();
+	static HashMap<String,Candidate> allCandidates = new HashMap<String,Candidate>();
 	static HashMap<String,GSMeritList> allRankLists  = new HashMap<String,GSMeritList>();
 	private static boolean end = false;
 	public static void main(String args[]) throws FileNotFoundException{
@@ -47,7 +47,7 @@ public class GaleShapleyAdmission {
         catch (Exception e) {
             e.printStackTrace();
         } 
-      /* Set<String> all_names = allVirtualPrograms.keySet();
+        /*Set<String> all_names = allVirtualPrograms.keySet();
         String[] temp_names = all_names.toArray(new String[all_names.size()]);
         for(int i=0;i<allVirtualPrograms.size();i++){
         	System.out.println(temp_names[i]);
@@ -66,13 +66,12 @@ public class GaleShapleyAdmission {
 				tempCandidate.setCategory(tokens[1]);
 				tempCandidate.setPDStatus(tokens[2]);
 				tempCandidate.setPL(tokens[3]);
-				tempCandidate.makeVPL();
 			/*	for(int i=0;i<tempCandidate.virtual_pl.size();i++){
 					System.out.print(tempCandidate.virtual_pl.get(i));
 					System.out.print(" ");
 				}
 				System.out.println(); */
-				allCandidates.add(tempCandidate);
+				allCandidates.put(tokens[0],tempCandidate);
 			}
 		}
 		catch(Exception e){
@@ -87,6 +86,23 @@ public class GaleShapleyAdmission {
             line = fileReader.readLine();
 			while((line = fileReader.readLine()) != null){
 				String[] tokens = line.split(",");
+				Candidate candidate = allCandidates.get(tokens[0]);
+				String candidate_category = candidate.getCategory().toLowerCase();
+				candidate.ge_rank = Integer.valueOf(tokens[3]);
+				candidate.ge_pd_rank = Integer.valueOf(tokens[8]);
+				switch (candidate_category){
+					case "obc" : candidate.cat_rank = Integer.valueOf(tokens[4]);
+								 candidate.cat_pd_rank = Integer.valueOf(tokens[9]);
+								 break;
+					case "sc" : candidate.cat_rank = Integer.valueOf(tokens[5]);
+					 			 candidate.cat_pd_rank = Integer.valueOf(tokens[10]);
+					 			 break;
+					case "st" : candidate.cat_rank = Integer.valueOf(tokens[6]);
+					 			 candidate.cat_pd_rank = Integer.valueOf(tokens[11]);
+					 			 break;
+				}
+				candidate.makeActualVPL();
+				allCandidates.put(candidate.getID(), candidate);
 				for(int i=0;i<4;i++){
 					GSMeritList tempMeritList = allRankLists.get(program_tokens[i]);
 					if(Integer.valueOf(tokens[i+3])>=0){
@@ -109,18 +125,23 @@ public class GaleShapleyAdmission {
 	}
 	public static void iterate(){	
 		int N = allCandidates.size();
+		Set<String> temp_candidates_id = allCandidates.keySet();
+		String[] candidates_id = temp_candidates_id.toArray(new String[temp_candidates_id.size()]);
 		while(!end){
+			end = true;
 			for(int n=0;n<N;n++){
-				Candidate candidate = allCandidates.get(n);
-				if(candidate.getAllotedVP() == -1 && candidate.getCurrentVP()<=candidate.virtual_pl.size() && candidate.virtual_pl.size()!=0){
-					int current_vp = candidate.getCurrentVP();
-					VirtualProgramme virtual_programme = allVirtualPrograms.get(candidate.virtual_pl.get(current_vp));
+				Candidate candidate = allCandidates.get(candidates_id[n]);
+				if(candidate.getAllotedVP() == -1 && candidate.getNextVP()<candidate.virtual_pl.size() && candidate.virtual_pl.size()!=0){
+					int next_vp = candidate.getNextVP();
+					candidate.current_vp = next_vp;
+					VirtualProgramme virtual_programme = allVirtualPrograms.get(candidate.virtual_pl.get(next_vp));
 					virtual_programme.addCandidateToAppliedList(candidate);
-					candidate.setCurrentVP(current_vp++);
-					candidate.setNextVP(current_vp++);
+					allVirtualPrograms.put(candidate.virtual_pl.get(next_vp), virtual_programme);
+					candidate.next_vp++;
+					allCandidates.put(candidate.getID(), candidate);
 				}
-				if(end=true){
-					if(candidate.getCurrentVP()==candidate.virtual_pl.size()-1) end=true;
+				if(end==true){
+					if(candidate.getCurrentVP()==candidate.virtual_pl.size()-1 || candidate.alloted_vp != -1) end=true;
 					else end=false;
 				}
 			}
@@ -130,41 +151,72 @@ public class GaleShapleyAdmission {
 			for(int k=0;k<K;k++){
 				VirtualProgramme virtualProgramme = allVirtualPrograms.get(vpl_names[k]);
 				ArrayList<Candidate> applied_candidates = virtualProgramme.getAppliedList();
+				applied_candidates.addAll(virtualProgramme.wait_list);                                
 				int P = applied_candidates.size();
-				System.out.println(virtualProgramme.getCategory()+" printed here");
+				/*System.out.println(virtualProgramme.getCategory()+" printed here");
 				for(int i=0;i<P;i++){
 					System.out.println(applied_candidates.get(i).getID());
-				}
+				} */
 				if(applied_candidates.size()<virtualProgramme.quota){
 					for(int i=0;i<applied_candidates.size();i++){
 						virtualProgramme.addCadidateToWaitList(applied_candidates.get(i));
+						String id = applied_candidates.get(i).getID();
+						Candidate candidate = allCandidates.get(id);
+						candidate.alloted_vp = candidate.current_vp;
+						allCandidates.put(id, candidate);
 					}
 				}
 				else{
-					ArrayList<Candidate> top_q_candidates = getTopQCandidates(applied_candidates,virtualProgramme.getCategory(),virtualProgramme.quota);
-					for(int i=0;i<top_q_candidates.size();i++){
-						virtualProgramme.addCadidateToWaitList(top_q_candidates.get(i));
+					ArrayList<Candidate> sorted_candidates = sortCandidates(applied_candidates,virtualProgramme.getCategory());
+					for(int i=0;i<virtualProgramme.quota;i++){                                    //adding the top q candidates of the sorted applied list
+						virtualProgramme.addCadidateToWaitList(sorted_candidates.get(i));
+					}
+					int q = virtualProgramme.quota;
+					int last_added = q-1;
+					int last_rank = applied_candidates.get(last_added).ge_rank;
+					for(int i=q;i<applied_candidates.size();i++){                                //taking care of same rank as last added but no seat left case
+						if(applied_candidates.get(i).ge_rank==last_rank){
+							virtualProgramme.addCadidateToWaitList(sorted_candidates.get(i));
+							last_added++;
+						}
+						else break;
+					}
+					for(int i=0;i<=last_added;i++){
+						Candidate candidate = sorted_candidates.get(i);
+						candidate.alloted_vp = candidate.current_vp;
+						allCandidates.put(candidate.getID(), candidate);
+					}
+					for(int i=last_added+1;i<sorted_candidates.size();i++){
+						Candidate candidate = sorted_candidates.get(i);
+						candidate.alloted_vp = -1;
+						allCandidates.put(candidate.getID(), candidate);
 					}
 				}
+				virtualProgramme.applied_list = new ArrayList<Candidate>();                                             //clearing the applied list after filtering 
+				allVirtualPrograms.put(vpl_names[k], virtualProgramme);
 			}
+		}
+		for(String id : candidates_id){
+			Candidate candidate = allCandidates.get(id);
+			if(candidate.alloted_vp!=-1)System.out.println(candidate.getID()+" "+candidate.virtual_pl.get(candidate.alloted_vp));
 		}
 	}
 	
-	public static ArrayList<Candidate> getTopQCandidates(ArrayList<Candidate> applied_candidates,String merit_list_name,Integer q){
+	public static ArrayList<Candidate> sortCandidates(ArrayList<Candidate> applied_candidates,String merit_list_name){
+		int q = applied_candidates.size();
 		ArrayList<Candidate> result = new ArrayList<Candidate>();
 		GSMeritList merit_list = allRankLists.get(merit_list_name);
 		Collections.sort(applied_candidates, new CandidateComparator(merit_list_name));
 		for(int i=0;i<q;i++){
 			result.add(applied_candidates.get(i));
 		}
-		int last_rank = merit_list.getRank(result.get(q-1).getID());
-		for(int i=q;i<applied_candidates.size();i++){
-			if(merit_list.getRank(applied_candidates.get(i).getID())==last_rank){
-				result.add(applied_candidates.get(i));
-			}
-			else break;
-		}
 		return result;
+	}
+	
+	public void reject(ArrayList<Candidate> reject_list){
+		for(Candidate candidate : reject_list){
+			candidate.alloted_vp = -1;
+		}
 	}
 	public static class CandidateComparator implements Comparator<Candidate>{
 		String merit_list_name;
@@ -177,21 +229,11 @@ public class GaleShapleyAdmission {
 	    public int compare(Candidate c1, Candidate c2) {
 	    	int rank1 = merit_list.getRank(c1.getID());
 	    	int rank2 = merit_list.getRank(c2.getID());
-	    	if(rank1!=0 && rank2!=0){
-	    		if(rank1 > rank2){
-		            return 1;
-		        } else {
-		            return -1;
-		        }
-	    	}
-	    	else if(rank1==0){
-	    		return -1;
-	    	}
-	    	else if(rank2==0){
-	    		return -1;
-	    	}
-	    	else return 1;
-	        
+    		if(rank1 > rank2){
+	            return 1;
+	        } else {
+	            return -1;
+	        }
 	    }
 	}
 }
