@@ -127,6 +127,7 @@ public class MeritOrderAdmission{
 					for(int k=0;k<candidate_ids.size();k++){
 						String candidate_id = candidate_ids.get(k);
 						Candidate candidate = allCandidates.get(candidate_id);
+						System.out.println(candidate.id+" "+candidate.virtual_pl.toString());
 						if(candidate.alloted_vp==-1){
 							ArrayList<String> preferences = candidate.virtual_pl;
 							for(int n=0;n<preferences.size();n++){
@@ -135,6 +136,7 @@ public class MeritOrderAdmission{
 									virtual_programme.addCadidateToWaitList(candidate);
 									virtual_programme.highest_rank = j;
 									candidate.setAllotedVP(n);
+									//System.out.println(candidate.id+" "+candidate.virtual_pl.get(candidate.alloted_vp));
 									break;
 								}
 							    else if(virtual_programme.wait_list.size()==virtual_programme.quota && checkIfSameRank(candidate,virtual_programme)){
@@ -148,12 +150,6 @@ public class MeritOrderAdmission{
 					}
 				}
 			}
-		}
-		Set<String> temp = allCandidates.keySet();
-		String[] temp2 = temp.toArray(new String[temp.size()]);
-		for(String id : temp2){
-			Candidate candidate = allCandidates.get(id);
-			if(candidate.alloted_vp!=-1) System.out.println(candidate.id+" "+candidate.virtual_pl.get(candidate.alloted_vp));
 		}
 	}
 	

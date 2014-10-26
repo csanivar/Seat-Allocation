@@ -102,6 +102,7 @@ public class GaleShapleyAdmission {
 					 			 break;
 				}
 				candidate.makeActualVPL();
+				System.out.println(candidate.getID()+" "+candidate.virtual_pl.toString());
 				allCandidates.put(candidate.getID(), candidate);
 				for(int i=0;i<4;i++){
 					GSMeritList tempMeritList = allRankLists.get(program_tokens[i]);
@@ -165,6 +166,7 @@ public class GaleShapleyAdmission {
 				}
 				else{
 					ArrayList<Candidate> sorted_candidates = sortCandidates(applied_candidates,virtualProgramme.getCategory());
+					for(Candidate candidate : sorted_candidates) System.out.println(candidate.getID());
 					for(int i=0;i<virtualProgramme.quota;i++){                                    //adding the top q candidates of the sorted applied list
 						virtualProgramme.addCadidateToWaitList(sorted_candidates.get(i));
 					}

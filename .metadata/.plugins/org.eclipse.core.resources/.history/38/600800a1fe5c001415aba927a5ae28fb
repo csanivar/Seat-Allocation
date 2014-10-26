@@ -3,9 +3,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-
-import javax.print.attribute.standard.PDLOverrideSupported;
 
 public class MeritOrderAdmission{
 	static String program_tokens[] = {"GE","OBC","SC","ST","GE-PD","OBC-PD","SC-PD","ST-PD"};
@@ -131,16 +128,20 @@ public class MeritOrderAdmission{
 							ArrayList<String> preferences = candidate.virtual_pl;
 							for(int n=0;n<preferences.size();n++){
 								VirtualProgramme virtual_programme = allVirtualPrograms.get(preferences.get(n));
-							    if(virtual_programme.wait_list.size()<virtual_programme.quota){
+								/*System.out.println(virtual_programme.wait_list.size());
+								System.out.println(virtual_programme.quota);
+								System.out.println(virtual_programme.highest_rank); */
+								if(virtual_programme.wait_list.size()==virtual_programme.quota && virtual_programme.highest_rank==j){
 									virtual_programme.addCadidateToWaitList(candidate);
-									virtual_programme.highest_rank = j;
 									candidate.setAllotedVP(n);
+									virtual_programme.highest_rank = j;
 									break;
 								}
-							    else if(virtual_programme.wait_list.size()==virtual_programme.quota && checkIfSameRank(candidate,virtual_programme)){
+								else if(virtual_programme.wait_list.size()<virtual_programme.quota){
 									virtual_programme.addCadidateToWaitList(candidate);
-									candidate.setAllotedVP(n);
 									virtual_programme.highest_rank = j;
+									candidate.setAllotedVP(n);
+									System.out.println(candidate.id+" "+candidate.virtual_pl.get(candidate.alloted_vp));
 									break;
 								}
 							}
@@ -149,21 +150,5 @@ public class MeritOrderAdmission{
 				}
 			}
 		}
-		Set<String> temp = allCandidates.keySet();
-		String[] temp2 = temp.toArray(new String[temp.size()]);
-		for(String id : temp2){
-			Candidate candidate = allCandidates.get(id);
-			if(candidate.alloted_vp!=-1) System.out.println(candidate.id+" "+candidate.virtual_pl.get(candidate.alloted_vp));
-		}
-	}
-	
-	public static boolean checkIfSameRank(Candidate candidate,VirtualProgramme virtual_program){
-		Candidate last_alloted_candidate = virtual_program.wait_list.get(virtual_program.wait_list.size()-1);
-		String category = virtual_program.getCategory();
-		if(category.equals("GE") && candidate.ge_rank==last_alloted_candidate.ge_rank) return true;
-		else if(category.equals("GE-PD") && candidate.ge_pd_rank==last_alloted_candidate.ge_pd_rank) return true;
-		else if((category.equals("OBC") || category.equals("SC") || category.equals("ST")) && candidate.cat_rank==last_alloted_candidate.cat_rank) return true;
-		else if((category.equals("OBC-PD") || category.equals("SC-PD") || category.equals("ST-PD")) && candidate.cat_pd_rank==last_alloted_candidate.cat_pd_rank) return true;
-		return false;
 	}
 }
