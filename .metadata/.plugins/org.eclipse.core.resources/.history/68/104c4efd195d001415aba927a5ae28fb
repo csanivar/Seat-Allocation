@@ -166,7 +166,4 @@ public class MeritOrderAdmission{
 		else if((category.equals("OBC-PD") || category.equals("SC-PD") || category.equals("ST-PD")) && candidate.cat_pd_rank==last_alloted_candidate.cat_pd_rank) return true;
 		return false;
 	}
-	
-	public void changeQuotasAfterDereservation(){
-	}
 }

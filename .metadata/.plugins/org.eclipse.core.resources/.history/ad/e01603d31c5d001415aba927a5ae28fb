@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,7 +24,6 @@ public class GaleShapleyAdmission {
 		readRankList();
 		allotBeforeDereservation();
 		changeQuotasAfterDereservation();
-		prepareStudentsForDereservation();
 		allotAfterDereservation();
 	}
 	
@@ -247,6 +245,7 @@ public class GaleShapleyAdmission {
 			}
 			else if(diff>0 && virtual_program.getCategory().equals("GE-PD")){
 				String tokens[] = vpl_names[k].split("-");
+				System.out.println(diff);
 				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
 				temp_vp.quota += diff;
 				virtual_program.quota -= diff;
@@ -272,7 +271,7 @@ public class GaleShapleyAdmission {
 		}
 	}
 	
-	public static void prepareStudentsForDereservation(){
+	public void prepareStudentsForDereservation(){
 		Set<String> temp_candidates_id = allCandidates.keySet();
 		String[] candidates_id = temp_candidates_id.toArray(new String[temp_candidates_id.size()]);
 		for(String id : candidates_id){
@@ -310,6 +309,7 @@ public class GaleShapleyAdmission {
 			int K = vpl_names.length;
 			for(int k=0;k<K;k++){
 				VirtualProgramme virtualProgramme = allVirtualPrograms.get(vpl_names[k]);
+				System.out.println(virtualProgramme.quota);
 				ArrayList<Candidate> applied_candidates = virtualProgramme.getAppliedList();
 				applied_candidates.addAll(virtualProgramme.wait_list);
 				virtualProgramme.wait_list = new ArrayList<Candidate>();

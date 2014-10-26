@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -24,9 +23,6 @@ public class GaleShapleyAdmission {
 		readChoices();
 		readRankList();
 		allotBeforeDereservation();
-		changeQuotasAfterDereservation();
-		prepareStudentsForDereservation();
-		allotAfterDereservation();
 	}
 	
 	private static void readPrograms() throws FileNotFoundException{
@@ -176,7 +172,7 @@ public class GaleShapleyAdmission {
 					int last_added = q-1;
 					int last_rank = applied_candidates.get(last_added).ge_rank;
 					for(int i=q;i<applied_candidates.size();i++){                                //taking care of same rank as last added but no seat left case
-						if(checkIfSameRank(sorted_candidates.get(i),virtualProgramme)){
+						if(applied_candidates.get(i).ge_rank==last_rank){
 							virtualProgramme.addCadidateToWaitList(sorted_candidates.get(i));
 							last_added++;
 						}
@@ -197,11 +193,16 @@ public class GaleShapleyAdmission {
 				allVirtualPrograms.put(vpl_names[k], virtualProgramme);
 			}
 		}
+		for(String id : candidates_id){
+			Candidate candidate = allCandidates.get(id);
+			if(candidate.alloted_vp!=-1)System.out.println(candidate.getID()+" "+candidate.virtual_pl.get(candidate.alloted_vp));
+		}
 	}
 	
 	public static ArrayList<Candidate> sortCandidates(ArrayList<Candidate> applied_candidates,String merit_list_name){
 		int q = applied_candidates.size();
 		ArrayList<Candidate> result = new ArrayList<Candidate>();
+		GSMeritList merit_list = allRankLists.get(merit_list_name);
 		Collections.sort(applied_candidates, new CandidateComparator(merit_list_name));
 		for(int i=0;i<q;i++){
 			result.add(applied_candidates.get(i));
@@ -233,7 +234,7 @@ public class GaleShapleyAdmission {
 	    }
 	}
 	
-	public static void changeQuotasAfterDereservation(){
+	public void changeQuotasAfterDereservation(){
 		Set<String> temp_vpl_names = allVirtualPrograms.keySet();
 		String[] vpl_names = temp_vpl_names.toArray(new String[temp_vpl_names.size()]);
 		for(int k=0;k<vpl_names.length;k++){
@@ -241,129 +242,28 @@ public class GaleShapleyAdmission {
 			int diff = virtual_program.quota - virtual_program.wait_list.size();;
 			if(diff>0 && virtual_program.getCategory().equals("OBC")){
 				String tokens[] = vpl_names[k].split("-");
-				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
-				temp_vp.quota += diff;
-				virtual_program.quota -= diff;
-			}
-			else if(diff>0 && virtual_program.getCategory().equals("GE-PD")){
-				String tokens[] = vpl_names[k].split("-");
-				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
+				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens+"-GE");
 				temp_vp.quota += diff;
 				virtual_program.quota -= diff;
 			}
 			else if(diff>0 && virtual_program.getCategory().equals("OBC-PD")){
 				String tokens[] = vpl_names[k].split("-");
-				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
+				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens+"-GE");
 				temp_vp.quota += diff;
 				virtual_program.quota -= diff;
 			}
 			else if(diff>0 && virtual_program.getCategory().equals("SC-PD")){
 				String tokens[] = vpl_names[k].split("-");
-				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-SC");
+				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens+"-SC");
 				temp_vp.quota += diff;
 				virtual_program.quota -= diff;
 			}
 			else if(diff>0 && virtual_program.getCategory().equals("ST-PD")){
 				String tokens[] = vpl_names[k].split("-");
-				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-ST");
+				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens+"-ST");
 				temp_vp.quota += diff;
 				virtual_program.quota -= diff;
 			}
 		}
-	}
-	
-	public static void prepareStudentsForDereservation(){
-		Set<String> temp_candidates_id = allCandidates.keySet();
-		String[] candidates_id = temp_candidates_id.toArray(new String[temp_candidates_id.size()]);
-		for(String id : candidates_id){
-			Candidate candidate = allCandidates.get(id);
-			candidate.alloted_vp = -1;
-			candidate.current_vp = 0;
-			candidate.next_vp = 0;
-		}
-	}
-	public static void allotAfterDereservation(){
-		int N = allCandidates.size();
-		Set<String> temp_candidates_id = allCandidates.keySet();
-		String[] candidates_id = temp_candidates_id.toArray(new String[temp_candidates_id.size()]);
-		end = false;
-		while(!end){
-			end = true;
-			for(int n=0;n<N;n++){
-				Candidate candidate = allCandidates.get(candidates_id[n]);
-				if(candidate.getAllotedVP() == -1 && candidate.getNextVP()<candidate.virtual_pl.size() && candidate.virtual_pl.size()!=0){
-					int next_vp = candidate.getNextVP();
-					candidate.current_vp = next_vp;
-					VirtualProgramme virtual_programme = allVirtualPrograms.get(candidate.virtual_pl.get(next_vp));
-					virtual_programme.addCandidateToAppliedList(candidate);
-					allVirtualPrograms.put(candidate.virtual_pl.get(next_vp), virtual_programme);
-					candidate.next_vp++;
-					allCandidates.put(candidate.getID(), candidate);
-				}
-				if(end==true){
-					if(candidate.getNextVP()>candidate.virtual_pl.size()-1 || candidate.alloted_vp != -1) end=true;
-					else end=false;
-				}
-			}
-			Set<String> temp_vpl_names = allVirtualPrograms.keySet();
-			String[] vpl_names =  temp_vpl_names.toArray(new String[temp_vpl_names.size()]);
-			int K = vpl_names.length;
-			for(int k=0;k<K;k++){
-				VirtualProgramme virtualProgramme = allVirtualPrograms.get(vpl_names[k]);
-				ArrayList<Candidate> applied_candidates = virtualProgramme.getAppliedList();
-				applied_candidates.addAll(virtualProgramme.wait_list);
-				virtualProgramme.wait_list = new ArrayList<Candidate>();
-				int P = applied_candidates.size();
-				if(applied_candidates.size()<virtualProgramme.quota){
-					for(int i=0;i<applied_candidates.size();i++){
-						virtualProgramme.addCadidateToWaitList(applied_candidates.get(i));
-						String id = applied_candidates.get(i).getID();
-						Candidate candidate = allCandidates.get(id);
-						candidate.alloted_vp = candidate.current_vp;
-						allCandidates.put(id, candidate);
-					}
-				}
-				else{
-					ArrayList<Candidate> sorted_candidates = sortCandidates(applied_candidates,virtualProgramme.getCategory());
-					for(int i=0;i<virtualProgramme.quota;i++){                                    //adding the top q candidates of the sorted applied list
-						virtualProgramme.addCadidateToWaitList(sorted_candidates.get(i));
-					}
-					int q = virtualProgramme.quota;
-					int last_added = q-1;
-					for(int i=q;i<applied_candidates.size();i++){                                //taking care of same rank as last added but no seat left case
-						if(checkIfSameRank(sorted_candidates.get(i),virtualProgramme)){
-							virtualProgramme.addCadidateToWaitList(sorted_candidates.get(i));
-							last_added++;
-						}
-						else break;
-					}
-					for(int i=0;i<=last_added;i++){
-						Candidate candidate = sorted_candidates.get(i);
-						candidate.alloted_vp = candidate.current_vp;
-						allCandidates.put(candidate.getID(), candidate);
-					}
-					for(int i=last_added+1;i<sorted_candidates.size();i++){
-						Candidate candidate = sorted_candidates.get(i);
-						candidate.alloted_vp = -1;
-						allCandidates.put(candidate.getID(), candidate);
-					}
-				}
-				virtualProgramme.applied_list = new ArrayList<Candidate>();                                             //clearing the applied list after filtering 
-				allVirtualPrograms.put(vpl_names[k], virtualProgramme);
-			}
-		}
-		for(String id : candidates_id){
-			Candidate candidate = allCandidates.get(id);
-			if(candidate.alloted_vp!=-1)System.out.println(candidate.getID()+" "+candidate.virtual_pl.get(candidate.alloted_vp));
-		}
-	}
-	public static boolean checkIfSameRank(Candidate candidate,VirtualProgramme virtual_program){
-		Candidate last_alloted_candidate = virtual_program.wait_list.get(virtual_program.wait_list.size()-1);
-		String category = virtual_program.getCategory();
-		if(category.equals("GE") && candidate.ge_rank==last_alloted_candidate.ge_rank) return true;
-		else if(category.equals("GE-PD") && candidate.ge_pd_rank==last_alloted_candidate.ge_pd_rank) return true;
-		else if((category.equals("OBC") || category.equals("SC") || category.equals("ST")) && candidate.cat_rank==last_alloted_candidate.cat_rank) return true;
-		else if((category.equals("OBC-PD") || category.equals("SC-PD") || category.equals("ST-PD")) && candidate.cat_pd_rank==last_alloted_candidate.cat_pd_rank) return true;
-		return false;
 	}
 }
