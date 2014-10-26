@@ -56,7 +56,6 @@ public class MeritOrderAdmission{
 				tempCandidate.setCategory(tokens[1]);
 				tempCandidate.setPDStatus(tokens[2]);
 				tempCandidate.setPL(tokens[3]);
-				tempCandidate.makeVPL();
 			/*	for(int i=0;i<tempCandidate.virtual_pl.size();i++){
 					System.out.print(tempCandidate.virtual_pl.get(i));
 					System.out.print(" ");
@@ -123,27 +122,28 @@ public class MeritOrderAdmission{
 				if(merit_list.rank_list.containsKey(j)){
 					ArrayList<String> candidate_ids = merit_list.rank_list.get(j);
 					for(int k=0;k<candidate_ids.size();k++){
-						String candidate_id = candidate_ids.get(i);
+						String candidate_id = candidate_ids.get(k);
 						Candidate candidate = allCandidates.get(candidate_id);
-						ArrayList<String> preferences = candidate.virtual_pl;
-						for(int n=0;n<preferences.size();n++){
-							VirtualProgramme virtual_programme = allVirtualPrograms.get(preferences.get(n));
-							/*System.out.println(virtual_programme.wait_list.size());
-							System.out.println(virtual_programme.quota);
-							System.out.println(virtual_programme.highest_rank); */
-							if(virtual_programme.wait_list.size()==virtual_programme.quota && virtual_programme.highest_rank==j){
-								virtual_programme.quota++;
-								virtual_programme.addCadidateToWaitList(candidate);
-								candidate.setAllotedVP(n);
-								virtual_programme.highest_rank = j;
-								break;
-							}
-							else if(virtual_programme.wait_list.size()<virtual_programme.quota){
-								virtual_programme.addCadidateToWaitList(candidate);
-								virtual_programme.highest_rank = j;
-								candidate.setAllotedVP(n);
-								System.out.println(candidate.id+" "+candidate.virtual_pl.get(candidate.alloted_vp));
-								break;
+						if(candidate.alloted_vp==-1){
+							ArrayList<String> preferences = candidate.virtual_pl;
+							for(int n=0;n<preferences.size();n++){
+								VirtualProgramme virtual_programme = allVirtualPrograms.get(preferences.get(n));
+								/*System.out.println(virtual_programme.wait_list.size());
+								System.out.println(virtual_programme.quota);
+								System.out.println(virtual_programme.highest_rank); */
+								if(virtual_programme.wait_list.size()==virtual_programme.quota && virtual_programme.highest_rank==j){
+									virtual_programme.addCadidateToWaitList(candidate);
+									candidate.setAllotedVP(n);
+									virtual_programme.highest_rank = j;
+									break;
+								}
+								else if(virtual_programme.wait_list.size()<virtual_programme.quota){
+									virtual_programme.addCadidateToWaitList(candidate);
+									virtual_programme.highest_rank = j;
+									candidate.setAllotedVP(n);
+									System.out.println(candidate.id+" "+candidate.virtual_pl.get(candidate.alloted_vp));
+									break;
+								}
 							}
 						}
 					}

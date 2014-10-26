@@ -153,10 +153,12 @@ public class GaleShapleyAdmission {
 						System.out.println(vpl_names[k]);
 				VirtualProgramme virtualProgramme = allVirtualPrograms.get(vpl_names[k]);
 				ArrayList<Candidate> applied_candidates = virtualProgramme.getAppliedList();
-				applied_candidates.addAll(virtualProgramme.wait_list);
-				virtualProgramme.wait_list = new ArrayList<Candidate>();
+				applied_candidates.addAll(virtualProgramme.wait_list);                                
 				int P = applied_candidates.size();
-				//System.out.println(virtualProgramme.getCategory()+" printed here"); 
+				//System.out.println(virtualProgramme.getCategory()+" printed here");
+				for(int i=0;i<P;i++){
+					System.out.println(applied_candidates.get(i).getID());
+				} 
 				if(applied_candidates.size()<virtualProgramme.quota){
 					for(int i=0;i<applied_candidates.size();i++){
 						virtualProgramme.addCadidateToWaitList(applied_candidates.get(i));
@@ -168,7 +170,6 @@ public class GaleShapleyAdmission {
 				}
 				else{
 					ArrayList<Candidate> sorted_candidates = sortCandidates(applied_candidates,virtualProgramme.getCategory());
-					for(Candidate candidate : sorted_candidates) System.out.println(candidate.getID());
 					for(int i=0;i<virtualProgramme.quota;i++){                                    //adding the top q candidates of the sorted applied list
 						virtualProgramme.addCadidateToWaitList(sorted_candidates.get(i));
 					}
@@ -196,7 +197,6 @@ public class GaleShapleyAdmission {
 				virtualProgramme.applied_list = new ArrayList<Candidate>();                                             //clearing the applied list after filtering 
 				allVirtualPrograms.put(vpl_names[k], virtualProgramme);
 			}
-			System.out.println();
 		}
 		for(String id : candidates_id){
 			Candidate candidate = allCandidates.get(id);

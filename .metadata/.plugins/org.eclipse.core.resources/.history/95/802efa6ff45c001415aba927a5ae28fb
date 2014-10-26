@@ -153,8 +153,7 @@ public class GaleShapleyAdmission {
 						System.out.println(vpl_names[k]);
 				VirtualProgramme virtualProgramme = allVirtualPrograms.get(vpl_names[k]);
 				ArrayList<Candidate> applied_candidates = virtualProgramme.getAppliedList();
-				applied_candidates.addAll(virtualProgramme.wait_list);
-				virtualProgramme.wait_list = new ArrayList<Candidate>();
+				applied_candidates.addAll(virtualProgramme.wait_list);                                
 				int P = applied_candidates.size();
 				//System.out.println(virtualProgramme.getCategory()+" printed here"); 
 				if(applied_candidates.size()<virtualProgramme.quota){
