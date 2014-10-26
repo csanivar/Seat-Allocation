@@ -273,7 +273,7 @@ public class GaleShapleyAdmission {
 		String[] candidates_id = temp_candidates_id.toArray(new String[temp_candidates_id.size()]);
 		for(String id : candidates_id){
 			Candidate candidate = allCandidates.get(id);
-			if(candidate.alloted_vp == -1){
+			if(candidate.alloted_vp = -1){
 				candidate.current_vp = 0;
 				candidate.next_vp = 0;
 			}

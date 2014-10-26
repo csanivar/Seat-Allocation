@@ -209,7 +209,11 @@ public class GaleShapleyAdmission {
 		return result;
 	}
 	
-
+	public void reject(ArrayList<Candidate> reject_list){
+		for(Candidate candidate : reject_list){
+			candidate.alloted_vp = -1;
+		}
+	}
 	public static class CandidateComparator implements Comparator<Candidate>{
 		String merit_list_name;
 		GSMeritList merit_list;
@@ -273,10 +277,9 @@ public class GaleShapleyAdmission {
 		String[] candidates_id = temp_candidates_id.toArray(new String[temp_candidates_id.size()]);
 		for(String id : candidates_id){
 			Candidate candidate = allCandidates.get(id);
-			if(candidate.alloted_vp == -1){
-				candidate.current_vp = 0;
-				candidate.next_vp = 0;
-			}
+			candidate.alloted_vp = -1;
+			candidate.current_vp = 0;
+			candidate.next_vp = 0;
 		}
 	}
 	public static void allotAfterDereservation(){
