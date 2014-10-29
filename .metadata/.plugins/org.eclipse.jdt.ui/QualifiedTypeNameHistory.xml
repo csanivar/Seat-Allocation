@@ -4,4 +4,6 @@
 <fullyQualifiedTypeName name="java.util.Collections"/>
 <fullyQualifiedTypeName name="GaleShapleyAdmission.CandidateComparator"/>
 <fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="GaleShapleyAdmission"/>
+<fullyQualifiedTypeName name="MeritOrderAdmission"/>
 </qualifiedTypeNameHistroy>
