@@ -1,18 +1,19 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
-
-import javax.print.attribute.standard.PDLOverrideSupported;
 
 public class MeritOrderAdmission{
 	static String program_tokens[] = {"GE","OBC","SC","ST","GE-PD","OBC-PD","SC-PD","ST-PD"};
 	static HashMap<String,VirtualProgramme> allVirtualPrograms= new HashMap<String,VirtualProgramme>();
 	static HashMap<String,Candidate> allCandidates = new HashMap<String,Candidate>();
 	static HashMap<String,MeritList> allRankLists  = new HashMap<String,MeritList>();
-	public static void main(String args[]) throws FileNotFoundException{
+	
+	public MeritOrderAdmission() throws FileNotFoundException{
 		for(int i=0;i<8;i++){
 			MeritList tempMeritList = new MeritList();
 			allRankLists.put(program_tokens[i],tempMeritList);
@@ -20,9 +21,27 @@ public class MeritOrderAdmission{
 		readPrograms();
 		readChoices();
 		readRankList();
-		firstIteration();             // Iterate through all the rank lists and allot seats accordingly
 	}
-	
+	void runAlgorithm(){
+		allotSeats();
+		changeQuotasAfterDereservation();
+		prepareStudentsForDereservation();
+		allotSeats();
+	}
+	void printAllotedSeats() throws FileNotFoundException, UnsupportedEncodingException{
+		Set<String> temp = allCandidates.keySet();
+		String[] temp2 = temp.toArray(new String[temp.size()]);
+		PrintWriter writer = new PrintWriter("meritOrderOutput.csv", "UTF-8");
+		writer.println("CandidateUniqueID,ProgrammeID");
+		for(String id : temp2){
+			Candidate candidate = allCandidates.get(id);
+			if(candidate.alloted_vp!=-1) {
+				writer.println(candidate.id+","+candidate.virtual_pl.get(candidate.alloted_vp));
+			}
+			else writer.println(candidate.id+","+"-1");
+		}
+		writer.close();
+	}
 	private static void readPrograms() throws FileNotFoundException{
         BufferedReader fileReader = null;
         try
@@ -117,7 +136,7 @@ public class MeritOrderAdmission{
 		}
 	}
 	
-	private static void firstIteration(){
+	private static void allotSeats(){
 		for(int i=0;i<program_tokens.length;i++){
 			MeritList merit_list = allRankLists.get(program_tokens[i]);
 			int highest_rank = merit_list.getHighestRank();
@@ -155,6 +174,7 @@ public class MeritOrderAdmission{
 			Candidate candidate = allCandidates.get(id);
 			if(candidate.alloted_vp!=-1) System.out.println(candidate.id+" "+candidate.virtual_pl.get(candidate.alloted_vp));
 		}
+		System.out.println();
 	}
 	
 	public static boolean checkIfSameRank(Candidate candidate,VirtualProgramme virtual_program){
@@ -167,6 +187,54 @@ public class MeritOrderAdmission{
 		return false;
 	}
 	
-	public void changeQuotasAfterDereservation(){
+	public static void changeQuotasAfterDereservation(){
+		Set<String> temp_vpl_names = allVirtualPrograms.keySet();
+		String[] vpl_names = temp_vpl_names.toArray(new String[temp_vpl_names.size()]);
+		for(int k=0;k<vpl_names.length;k++){
+			VirtualProgramme virtual_program = allVirtualPrograms.get(vpl_names[k]);
+			int diff = virtual_program.quota - virtual_program.wait_list.size();;
+			if(diff>0 && virtual_program.getCategory().equals("OBC")){
+				String tokens[] = vpl_names[k].split("-");
+				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
+				temp_vp.quota += diff;
+				virtual_program.quota -= diff;
+			}
+			else if(diff>0 && virtual_program.getCategory().equals("GE-PD")){
+				String tokens[] = vpl_names[k].split("-");
+				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
+				temp_vp.quota += diff;
+				virtual_program.quota -= diff;
+			}
+			else if(diff>0 && virtual_program.getCategory().equals("OBC-PD")){
+				String tokens[] = vpl_names[k].split("-");
+				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
+				temp_vp.quota += diff;
+				virtual_program.quota -= diff;
+			}
+			else if(diff>0 && virtual_program.getCategory().equals("SC-PD")){
+				String tokens[] = vpl_names[k].split("-");
+				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-SC");
+				temp_vp.quota += diff;
+				virtual_program.quota -= diff;
+			}
+			else if(diff>0 && virtual_program.getCategory().equals("ST-PD")){
+				String tokens[] = vpl_names[k].split("-");
+				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-ST");
+				temp_vp.quota += diff;
+				virtual_program.quota -= diff;
+			}
+		}
+	}
+	
+	private static void prepareStudentsForDereservation(){
+		Set<String> temp_candidates_id = allCandidates.keySet();
+		String[] candidates_id = temp_candidates_id.toArray(new String[temp_candidates_id.size()]);
+		for(String id : candidates_id){
+			Candidate candidate = allCandidates.get(id);
+			if(candidate.alloted_vp == -1){
+				candidate.current_vp = 0;
+				candidate.next_vp = 0;
+			}
+		}
 	}
 }

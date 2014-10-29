@@ -1,6 +1,8 @@
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.sql.PreparedStatement;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +17,8 @@ public class GaleShapleyAdmission {
 	static HashMap<String,Candidate> allCandidates = new HashMap<String,Candidate>();
 	static HashMap<String,GSMeritList> allRankLists  = new HashMap<String,GSMeritList>();
 	private static boolean end = false;
-	public static void main(String args[]) throws FileNotFoundException{
+	
+	public GaleShapleyAdmission() throws FileNotFoundException{
 		for(int i=0;i<8;i++){
 			GSMeritList tempMeritList = new GSMeritList();
 			allRankLists.put(program_tokens[i],tempMeritList);
@@ -23,12 +26,27 @@ public class GaleShapleyAdmission {
 		readPrograms();
 		readChoices();
 		readRankList();
+	}
+	void runAlgorithm(){
 		allotBeforeDereservation();
 		changeQuotasAfterDereservation();
 		prepareStudentsForDereservation();
 		allotAfterDereservation();
 	}
-	
+	void printAllotedSeats() throws FileNotFoundException, UnsupportedEncodingException{
+		Set<String> temp = allCandidates.keySet();
+		String[] temp2 = temp.toArray(new String[temp.size()]);
+		PrintWriter writer = new PrintWriter("galeShapleyOutput.csv", "UTF-8");
+		writer.println("CandidateUniqueID,ProgrammeID");
+		for(String id : temp2){
+			Candidate candidate = allCandidates.get(id);
+			if(candidate.alloted_vp!=-1) {
+				writer.println(candidate.id+","+candidate.virtual_pl.get(candidate.alloted_vp));
+			}
+			else writer.println(candidate.id+","+"-1");
+		}
+		writer.close();
+	}
 	private static void readPrograms() throws FileNotFoundException{
         BufferedReader fileReader = null;
         try

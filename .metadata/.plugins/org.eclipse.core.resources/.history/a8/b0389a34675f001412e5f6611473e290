@@ -1,0 +1,15 @@
+import java.io.FileNotFoundException;
+
+
+public class Main {
+	public static void main(String args[]) throws FileNotFoundException{
+		runGaleShapley();
+		runMeritOrder();
+		
+	}
+	
+	public static void runGaleShapley() throws FileNotFoundException{
+		GaleShapleyAdmission galeShapleyAlgo = new GaleShapleyAdmission();
+		galeShapleyAlgo.runAlgorithm();
+	}
+}
