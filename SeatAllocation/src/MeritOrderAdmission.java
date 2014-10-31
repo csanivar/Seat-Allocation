@@ -23,10 +23,12 @@ public class MeritOrderAdmission{
 		readRankList();
 	}
 	void runAlgorithm(){
+		allotToDSCandidates();
 		allotSeats();
 		changeQuotasAfterDereservation();
 		prepareStudentsForDereservation();
 		allotSeats();
+		allotToForeignNationals();
 	}
 	void printAllotedSeats() throws FileNotFoundException, UnsupportedEncodingException{
 		Set<String> temp = allCandidates.keySet();
@@ -135,7 +137,39 @@ public class MeritOrderAdmission{
 			e.printStackTrace();
 		}
 	}
-	
+	private void allotToDSCandidates(){
+		for(int i=0;i<program_tokens.length;i++){
+			MeritList merit_list = allRankLists.get(program_tokens[i]);
+			int highest_rank = merit_list.getHighestRank();
+			for(int j=0;j<=highest_rank;j++){
+				if(merit_list.rank_list.containsKey(j)){
+					ArrayList<String> candidate_ids = merit_list.rank_list.get(j);
+					for(int k=0;k<candidate_ids.size();k++){
+						String candidate_id = candidate_ids.get(k);
+						Candidate candidate = allCandidates.get(candidate_id);
+						if(candidate.alloted_vp==-1 && candidate.category.equals("DS")){
+							ArrayList<String> preferences = candidate.virtual_pl;
+							for(int n=0;n<preferences.size();n++){
+								VirtualProgramme virtual_programme = allVirtualPrograms.get(preferences.get(n));
+							    if(virtual_programme.wait_list.size()<virtual_programme.quota){
+									virtual_programme.ds_wait_list.add(candidate);
+									virtual_programme.highest_rank = j;
+									candidate.setAllotedVP(n);
+									break;
+								}
+							    else if(virtual_programme.wait_list.size()==virtual_programme.quota && checkIfSameRank(candidate,virtual_programme)){
+									virtual_programme.ds_wait_list.add(candidate);
+									candidate.setAllotedVP(n);
+									virtual_programme.highest_rank = j;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 	private static void allotSeats(){
 		for(int i=0;i<program_tokens.length;i++){
 			MeritList merit_list = allRankLists.get(program_tokens[i]);
@@ -146,7 +180,7 @@ public class MeritOrderAdmission{
 					for(int k=0;k<candidate_ids.size();k++){
 						String candidate_id = candidate_ids.get(k);
 						Candidate candidate = allCandidates.get(candidate_id);
-						if(candidate.alloted_vp==-1){
+						if(candidate.alloted_vp==-1 && !candidate.category.equals("F")){
 							ArrayList<String> preferences = candidate.virtual_pl;
 							for(int n=0;n<preferences.size();n++){
 								VirtualProgramme virtual_programme = allVirtualPrograms.get(preferences.get(n));
@@ -168,13 +202,6 @@ public class MeritOrderAdmission{
 				}
 			}
 		}
-		Set<String> temp = allCandidates.keySet();
-		String[] temp2 = temp.toArray(new String[temp.size()]);
-		for(String id : temp2){
-			Candidate candidate = allCandidates.get(id);
-			if(candidate.alloted_vp!=-1) System.out.println(candidate.id+" "+candidate.virtual_pl.get(candidate.alloted_vp));
-		}
-		System.out.println();
 	}
 	
 	public static boolean checkIfSameRank(Candidate candidate,VirtualProgramme virtual_program){
@@ -234,6 +261,34 @@ public class MeritOrderAdmission{
 			if(candidate.alloted_vp == -1){
 				candidate.current_vp = 0;
 				candidate.next_vp = 0;
+			}
+		}
+	}
+	
+	private static void allotToForeignNationals(){
+		MeritList merit_list = allRankLists.get("GE");
+		int highest_rank = merit_list.getHighestRank();
+		for(int j=0;j<=highest_rank;j++){
+			if(merit_list.rank_list.containsKey(j)){
+				ArrayList<String> candidate_ids = merit_list.rank_list.get(j);
+				for(int k=0;k<candidate_ids.size();k++){
+					String candidate_id = candidate_ids.get(k);
+					Candidate candidate = allCandidates.get(candidate_id);
+					if(candidate.alloted_vp==-1 && candidate.category.equals("F")){
+						ArrayList<String> preferences = candidate.virtual_pl;
+						for(int n=0;n<preferences.size();n++){
+							VirtualProgramme virtual_programme = allVirtualPrograms.get(preferences.get(n));
+							int wait_list_size = virtual_programme.wait_list.size();
+							Candidate last_candidate = virtual_programme.wait_list.get(wait_list_size-1);
+						    if(candidate.ge_rank<last_candidate.ge_rank){
+								virtual_programme.addCadidateToWaitList(candidate);
+								virtual_programme.highest_rank = j;
+								candidate.setAllotedVP(n);
+								break;
+							}
+						}
+					}
+				}
 			}
 		}
 	}
