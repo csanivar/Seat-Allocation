@@ -38,7 +38,8 @@ public class MeritOrderAdmission{
 		for(String id : temp2){
 			Candidate candidate = allCandidates.get(id);
 			if(candidate.alloted_vp!=-1) {
-				writer.println(candidate.id+","+candidate.virtual_pl.get(candidate.alloted_vp));
+				String[] tokens = candidate.virtual_pl.get(candidate.alloted_vp).split("-");
+				writer.println(candidate.id+","+tokens[0]);
 			}
 			else writer.println(candidate.id+","+"-1");
 		}
@@ -224,32 +225,38 @@ public class MeritOrderAdmission{
 				String tokens[] = vpl_names[k].split("-");
 				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
 				temp_vp.quota += diff;
+				allVirtualPrograms.put(tokens[0]+"-GE", temp_vp);
 				virtual_program.quota -= diff;
 			}
 			else if(diff>0 && virtual_program.getCategory().equals("GE-PD")){
 				String tokens[] = vpl_names[k].split("-");
 				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
 				temp_vp.quota += diff;
+				allVirtualPrograms.put(tokens[0]+"-GE", temp_vp);
 				virtual_program.quota -= diff;
 			}
 			else if(diff>0 && virtual_program.getCategory().equals("OBC-PD")){
 				String tokens[] = vpl_names[k].split("-");
 				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-GE");
 				temp_vp.quota += diff;
+				allVirtualPrograms.put(tokens[0]+"-GE", temp_vp);
 				virtual_program.quota -= diff;
 			}
 			else if(diff>0 && virtual_program.getCategory().equals("SC-PD")){
 				String tokens[] = vpl_names[k].split("-");
 				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-SC");
 				temp_vp.quota += diff;
+				allVirtualPrograms.put(tokens[0]+"-SC", temp_vp);
 				virtual_program.quota -= diff;
 			}
 			else if(diff>0 && virtual_program.getCategory().equals("ST-PD")){
 				String tokens[] = vpl_names[k].split("-");
 				VirtualProgramme temp_vp = allVirtualPrograms.get(tokens[0]+"-ST");
 				temp_vp.quota += diff;
+				allVirtualPrograms.put(tokens[0]+"-ST", temp_vp);
 				virtual_program.quota -= diff;
 			}
+			allVirtualPrograms.put(vpl_names[k], virtual_program);
 		}
 	}
 	

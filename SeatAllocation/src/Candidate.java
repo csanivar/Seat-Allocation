@@ -66,6 +66,92 @@ public class Candidate{
 	void setAllotedVP(int alloted_vp){
 		this.alloted_vp = alloted_vp;
 	}
+	void makeVPL(){
+		String[] all_pls = pl.split("_");
+		int length = all_pls.length;
+		if(pd_status==false){
+			switch(category){
+				case "GE": for(int i=0;i<length;i++){
+							virtual_pl.add(all_pls[i]+"-GE");
+							virtual_pl.add(all_pls[i]+"-OBC");
+							virtual_pl.add(all_pls[i]+"-PD");
+							virtual_pl.add(all_pls[i]+"-OBC-PD");
+						 }
+						 break;
+				case "OBC": for(int i=0;i<length;i++){
+							virtual_pl.add(all_pls[i]+"-GE");
+							virtual_pl.add(all_pls[i]+"-OBC");
+							virtual_pl.add(all_pls[i]+"-PD");
+							virtual_pl.add(all_pls[i]+"-OBC-PD");
+						  }
+						  break;
+				case "SC": for(int i=0;i<length;i++){
+							virtual_pl.add(all_pls[i]+"-GE");
+							virtual_pl.add(all_pls[i]+"-SC");
+							virtual_pl.add(all_pls[i]+"-OBC");
+							virtual_pl.add(all_pls[i]+"-PD");
+							virtual_pl.add(all_pls[i]+"-OBC-PD");
+							virtual_pl.add(all_pls[i]+"-SC-PD");
+						 }
+						 break;
+				case "ST": for(int i=0;i<length;i++){
+							virtual_pl.add(all_pls[i]+"-GE");
+							virtual_pl.add(all_pls[i]+"-ST");
+							virtual_pl.add(all_pls[i]+"-OBC");
+							virtual_pl.add(all_pls[i]+"-PD");
+							virtual_pl.add(all_pls[i]+"-OBC-PD");
+							virtual_pl.add(all_pls[i]+"-ST-PD");
+						 }
+						break;
+				case "F": 
+							for(int i=0;i<length;i++){
+								virtual_pl.add(all_pls[i]+"-GE");
+								
+							 }
+						 break;
+			}
+		}
+		else if(pd_status==true){
+			switch(category){
+				case "GE": for(int i=0;i<length;i++){
+							virtual_pl.add(all_pls[i]+"-GE");
+							virtual_pl.add(all_pls[i]+"-PD");	
+						 }
+						 break;
+				case "OBC": for(int i=0;i<length;i++){
+							virtual_pl.add(all_pls[i]+"-GE");
+							virtual_pl.add(all_pls[i]+"-PD");
+							virtual_pl.add(all_pls[i]+"-OBC");
+							virtual_pl.add(all_pls[i]+"-OBC-PD");
+						  }
+						  break;
+				case "SC": for(int i=0;i<length;i++){
+							virtual_pl.add(all_pls[i]+"-GE");
+							virtual_pl.add(all_pls[i]+"-SC");
+							virtual_pl.add(all_pls[i]+"-PD");
+							virtual_pl.add(all_pls[i]+"-SC-PD");
+							virtual_pl.add(all_pls[i]+"-OBC");
+							virtual_pl.add(all_pls[i]+"-OBC-PD");
+						 }
+						 break;
+				case "ST": for(int i=0;i<length;i++){
+							virtual_pl.add(all_pls[i]+"-GE");
+							virtual_pl.add(all_pls[i]+"-ST");
+							virtual_pl.add(all_pls[i]+"-PD");
+							virtual_pl.add(all_pls[i]+"-ST-PD");
+							virtual_pl.add(all_pls[i]+"-OBC");
+							virtual_pl.add(all_pls[i]+"-OBC-PD");
+						 }
+						 break;
+				case "F": 
+							for(int i=0;i<length;i++){
+								virtual_pl.add(all_pls[i]+"-GE");
+								
+							 }
+						 break;
+			}
+		}
+	}
 
 	public void makeActualVPL(){
 		String[] all_pls = pl.split("_");
